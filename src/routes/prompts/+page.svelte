@@ -57,7 +57,8 @@
 			companyDescription: currentSession.company.description,
 			count: promptCount,
 			brandDiscoveryPrompt: editableBrandPrompt,
-			organicMentionPrompt: editableOrganicPrompt
+			organicMentionPrompt: editableOrganicPrompt,
+			llmSettings: currentSession.llmSettings
 		};
 
 		logs.add({

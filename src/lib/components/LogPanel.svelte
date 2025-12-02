@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { logs } from '$lib/stores/logs';
+	import LLMSettings from './LLMSettings.svelte';
 
 	let isOpen = $state(true);
 	let expandedLogs = $state<Set<string>>(new Set());
@@ -58,6 +59,8 @@
 
 	{#if isOpen}
 		<div class="panel-content">
+			<LLMSettings />
+
 			<div class="panel-header">
 				<h3>Logs</h3>
 				<button class="clear-btn" onclick={() => logs.clear()}>Clear</button>

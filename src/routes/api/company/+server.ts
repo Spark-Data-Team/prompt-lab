@@ -4,7 +4,7 @@ import OpenAI from 'openai';
 import { env } from '$env/dynamic/private';
 
 export const POST: RequestHandler = async ({ request }) => {
-	const { url, systemPrompt } = await request.json();
+	const { url, systemPrompt, llmSettings } = await request.json();
 
 	if (!url) {
 		return json({ error: 'URL is required' }, { status: 400 });
@@ -16,9 +16,15 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
 
+	// Default settings if not provided
+	const model = llmSettings?.model || 'gpt-5-mini';
+	const reasoning = llmSettings?.reasoning || 'low';
+	const searchContextSize = llmSettings?.searchContextSize || 'low';
+
 	try {
 		const response = await client.responses.create({
-			model: 'gpt-5-mini',
+			model,
+			reasoning: { effort: reasoning },
 			input: [
 				{
 					role: 'developer',
@@ -49,7 +55,7 @@ export const POST: RequestHandler = async ({ request }) => {
 				{
 					type: 'web_search',
 					user_location: { type: 'approximate', country: 'FR' },
-					search_context_size: 'low'
+					search_context_size: searchContextSize
 				}
 			]
 		});

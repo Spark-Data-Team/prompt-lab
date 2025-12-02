@@ -4,7 +4,7 @@ import OpenAI from 'openai';
 import { env } from '$env/dynamic/private';
 
 export const POST: RequestHandler = async ({ request }) => {
-	const { companyName, companyDescription, count, systemPrompt } = await request.json();
+	const { companyName, companyDescription, count, systemPrompt, llmSettings } = await request.json();
 
 	if (!companyName || !companyDescription) {
 		return json({ error: 'Company name and description are required' }, { status: 400 });
@@ -16,12 +16,17 @@ export const POST: RequestHandler = async ({ request }) => {
 
 	const client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
 
+	// Default settings if not provided
+	const model = llmSettings?.model || 'gpt-5-mini';
+	const reasoning = llmSettings?.reasoning || 'low';
+
 	// Replace {count} placeholder in the prompt
 	const finalPrompt = systemPrompt.replace(/\{count\}/g, String(count || 5));
 
 	try {
 		const response = await client.responses.create({
-			model: 'gpt-5-mini',
+			model,
+			reasoning: { effort: reasoning },
 			input: [
 				{
 					role: 'developer',

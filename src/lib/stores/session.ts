@@ -19,6 +19,16 @@ export interface Prompt {
 	topicId: string;
 }
 
+export type ModelChoice = 'gpt-5-nano' | 'gpt-5-mini' | 'gpt-5';
+export type LevelChoice = 'low' | 'medium' | 'high';
+
+export interface LLMSettings {
+	model: ModelChoice;
+	reasoning: LevelChoice;
+	verbosity: LevelChoice;
+	searchContextSize: LevelChoice;
+}
+
 export interface SessionState {
 	company: Company | null;
 	topics: Topic[];
@@ -28,6 +38,8 @@ export interface SessionState {
 	topicsPrompt: string;
 	brandDiscoveryPrompt: string;
 	organicMentionPrompt: string;
+	// LLM settings
+	llmSettings: LLMSettings;
 }
 
 const defaultCompanyPrompt = `# Objectif
@@ -178,6 +190,13 @@ TU DOIS ABSOLUMENT respecter cette distribution :
 
 Génère uniquement le JSON.`;
 
+const defaultLLMSettings: LLMSettings = {
+	model: 'gpt-5-mini',
+	reasoning: 'low',
+	verbosity: 'low',
+	searchContextSize: 'low'
+};
+
 function createSessionStore() {
 	const { subscribe, set, update } = writable<SessionState>({
 		company: null,
@@ -186,7 +205,8 @@ function createSessionStore() {
 		companyPrompt: defaultCompanyPrompt,
 		topicsPrompt: defaultTopicsPrompt,
 		brandDiscoveryPrompt: defaultBrandDiscoveryPrompt,
-		organicMentionPrompt: defaultOrganicMentionPrompt
+		organicMentionPrompt: defaultOrganicMentionPrompt,
+		llmSettings: defaultLLMSettings
 	});
 
 	return {
@@ -199,6 +219,10 @@ function createSessionStore() {
 		updateTopicsPrompt: (prompt: string) => update((s) => ({ ...s, topicsPrompt: prompt })),
 		updateBrandDiscoveryPrompt: (prompt: string) => update((s) => ({ ...s, brandDiscoveryPrompt: prompt })),
 		updateOrganicMentionPrompt: (prompt: string) => update((s) => ({ ...s, organicMentionPrompt: prompt })),
+		updateLLMSettings: (settings: Partial<LLMSettings>) => update((s) => ({
+			...s,
+			llmSettings: { ...s.llmSettings, ...settings }
+		})),
 		reset: () => set({
 			company: null,
 			topics: [],
@@ -206,7 +230,8 @@ function createSessionStore() {
 			companyPrompt: defaultCompanyPrompt,
 			topicsPrompt: defaultTopicsPrompt,
 			brandDiscoveryPrompt: defaultBrandDiscoveryPrompt,
-			organicMentionPrompt: defaultOrganicMentionPrompt
+			organicMentionPrompt: defaultOrganicMentionPrompt,
+			llmSettings: defaultLLMSettings
 		})
 	};
 }

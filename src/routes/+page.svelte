@@ -30,13 +30,16 @@
 		loading = true;
 		error = '';
 
+		const currentSession = get(session);
+
 		// Log the request with system prompt
 		logs.add({
 			type: 'request',
 			endpoint: '/api/company',
 			data: {
 				url: url.trim(),
-				systemPrompt: editablePrompt
+				systemPrompt: editablePrompt,
+				llmSettings: currentSession.llmSettings
 			}
 		});
 
@@ -46,7 +49,8 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					url: url.trim(),
-					systemPrompt: editablePrompt
+					systemPrompt: editablePrompt,
+					llmSettings: currentSession.llmSettings
 				})
 			});
 

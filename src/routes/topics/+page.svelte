@@ -35,7 +35,8 @@
 			companyName: currentSession.company.name,
 			companyDescription: currentSession.company.description,
 			count: topicCount,
-			systemPrompt: editablePrompt
+			systemPrompt: editablePrompt,
+			llmSettings: currentSession.llmSettings
 		};
 
 		logs.add({

@@ -10,7 +10,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		companyDescription,
 		count,
 		brandDiscoveryPrompt,
-		organicMentionPrompt
+		organicMentionPrompt,
+		llmSettings
 	} = await request.json();
 
 	if (!topicName || !companyName || !companyDescription) {
@@ -22,6 +23,10 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	const client = new OpenAI({ apiKey: env.OPENAI_API_KEY });
+
+	// Default settings if not provided
+	const model = llmSettings?.model || 'gpt-5-mini';
+	const reasoning = llmSettings?.reasoning || 'low';
 
 	// Calculate 70/30 split
 	const totalCount = count || 10;
@@ -42,7 +47,8 @@ export const POST: RequestHandler = async ({ request }) => {
 		// Run both generations in parallel
 		const [brandDiscoveryResponse, organicResponse] = await Promise.all([
 			client.responses.create({
-				model: 'gpt-5-mini',
+				model,
+				reasoning: { effort: reasoning },
 				input: [
 					{
 						role: 'developer',
@@ -81,7 +87,8 @@ export const POST: RequestHandler = async ({ request }) => {
 				}
 			}),
 			client.responses.create({
-				model: 'gpt-5-mini',
+				model,
+				reasoning: { effort: reasoning },
 				input: [
 					{
 						role: 'developer',
